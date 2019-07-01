@@ -14,7 +14,7 @@ public interface IFileSystem {
 
     File getFile(String filePath) throws IOException;
 
-    void saveFile(String filePath, ConvertibleOutputStream outputStream) throws IOException;
+    void saveFile(ConvertibleOutputStream outputStream, String filePath) throws IOException;
 
     void copyFile(File localFile, String destinationFile) throws IOException;
 

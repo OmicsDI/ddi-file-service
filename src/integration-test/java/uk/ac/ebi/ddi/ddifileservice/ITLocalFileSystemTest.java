@@ -48,7 +48,7 @@ public class ITLocalFileSystemTest {
 			while ((b = in.read()) != -1) {
 				outputStream.write(b);
 			}
-			fileSystem.saveFile(testFile2, outputStream);
+			fileSystem.saveFile(outputStream, testFile2);
 		}
 
 		List<String> files = fileSystem.listFilesFromFolder(parentPath);

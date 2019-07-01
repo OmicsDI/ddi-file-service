@@ -32,7 +32,7 @@ public class LocalFileSystem implements IFileSystem {
     }
 
     @Override
-    public void saveFile(String filePath, ConvertibleOutputStream outputStream) throws IOException {
+    public void saveFile(ConvertibleOutputStream outputStream, String filePath) throws IOException {
         try (OutputStream os = new FileOutputStream(filePath)) {
             outputStream.writeTo(os);
         }
