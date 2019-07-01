@@ -1,7 +1,6 @@
-package uk.ac.ebi.ddi.ddis3service.configuration;
+package uk.ac.ebi.ddi.ddifileservice.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
 
 @ConfigurationProperties("s3")
 public class S3Properties {
@@ -13,7 +12,7 @@ public class S3Properties {
 
     private String bucketName;
 
-    private boolean isLocal = false;
+    private boolean envAuth = false;
 
     public String getEndpointUrl() {
         return endpointUrl;
@@ -47,12 +46,12 @@ public class S3Properties {
         this.bucketName = bucketName;
     }
 
-    public boolean isLocal() {
-        return isLocal;
+    public boolean isEnvAuth() {
+        return envAuth;
     }
 
-    public void setLocal(boolean local) {
-        isLocal = local;
+    public void setEnvAuth(boolean envAuth) {
+        this.envAuth = envAuth;
     }
 
     @Override
