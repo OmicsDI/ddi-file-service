@@ -21,4 +21,8 @@ public interface IFileSystem {
     List<String> listFilesFromFolder(String folderPath);
 
     void deleteFile(String filePath);
+
+    boolean isFile(String filePath);
+
+    void cleanDirectory(String dirPath);
 }

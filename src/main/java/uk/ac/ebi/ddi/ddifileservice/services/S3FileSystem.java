@@ -71,6 +71,7 @@ public class S3FileSystem implements IFileSystem {
         try (InputStream in = getInputStream(filePath)) {
             Files.copy(in, file.toPath());
         }
+        file.deleteOnExit();
         return file;
     }
 
@@ -113,5 +114,18 @@ public class S3FileSystem implements IFileSystem {
     @Override
     public void deleteFile(String filePath) {
         s3Client.deleteObject(s3Properties.getBucketName(), filePath);
+    }
+
+    @Override
+    public boolean isFile(String filePath) {
+        return s3Client.doesObjectExist(s3Properties.getBucketName(), filePath);
+    }
+
+    @Override
+    public void cleanDirectory(String dirPath) {
+        List<String> files = listFilesFromFolder(dirPath);
+        for (String file : files) {
+            deleteFile(file);
+        }
     }
 }

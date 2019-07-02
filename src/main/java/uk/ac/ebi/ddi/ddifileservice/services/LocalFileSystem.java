@@ -1,5 +1,7 @@
 package uk.ac.ebi.ddi.ddifileservice.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
@@ -20,6 +22,8 @@ import java.util.stream.Stream;
         havingValue = "local"
 )
 public class LocalFileSystem implements IFileSystem {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalFileSystem.class);
 
     @Override
     public InputStream getInputStream(String filePath) throws FileNotFoundException {
@@ -59,6 +63,29 @@ public class LocalFileSystem implements IFileSystem {
     @Override
     public void deleteFile(String filePath) {
         File file = new File(filePath);
-        file.delete();
+        try {
+            Files.deleteIfExists(file.toPath());
+        } catch (IOException e) {
+            LOGGER.error("Exception occurred when trying to delete file {}, ", filePath, e);
+        }
+    }
+
+    @Override
+    public boolean isFile(String filePath) {
+        return new File(filePath).isFile();
+    }
+
+    @Override
+    public void cleanDirectory(String dirPath) {
+        File inputDirectory = new File(dirPath);
+        if (inputDirectory.isDirectory()) {
+            File[] files = inputDirectory.listFiles();
+            if (files == null) {
+                return;
+            }
+            for (File file : files) {
+                deleteFile(file.getAbsolutePath());
+            }
+        }
     }
 }
