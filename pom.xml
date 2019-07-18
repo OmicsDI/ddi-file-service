@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>ddi-file-service</artifactId>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<name>ddi-file-service</name>
 	<description>S3 Service for OmicsDI</description>
 
