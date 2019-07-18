@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,7 +77,8 @@ public class S3FileSystem implements IFileSystem {
     public File getFile(String filePath) throws IOException {
         File file = File.createTempFile("omics-tmp-file", ".tmp");
         try (InputStream in = getInputStream(filePath)) {
-            Files.copy(in, file.toPath());
+            Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
         }
         file.deleteOnExit();
         return file;

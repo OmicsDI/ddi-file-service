@@ -14,6 +14,7 @@ import uk.ac.ebi.ddi.ddifileservice.type.ConvertibleOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -63,6 +64,11 @@ public class ITS3FileSystemTest {
 		try (InputStream f2 = fileSystem.getInputStream(testFile2)) {
 			Assert.assertTrue(IOUtils.toString(f2).contains("this is the test file 2"));
 		}
+
+		File file = fileSystem.getFile(testFile1);
+		String contents = new String(Files.readAllBytes(file.toPath()));
+		Assert.assertTrue(contents.contains("This is a test file"));
+
 
 		fileSystem.deleteFile(testFile1);
 		fileSystem.deleteFile(testFile2);
