@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import uk.ac.ebi.ddi.ddifileservice.configuration.FileProperties;
 import uk.ac.ebi.ddi.ddifileservice.configuration.S3Properties;
 import uk.ac.ebi.ddi.ddifileservice.type.ConvertibleOutputStream;
+import uk.ac.ebi.ddi.ddifileservice.utils.FilenameUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -75,7 +76,8 @@ public class S3FileSystem implements IFileSystem {
 
     @Override
     public File getFile(String filePath) throws IOException {
-        File file = File.createTempFile("omics-tmp-file", ".tmp");
+        String extension = FilenameUtils.getFileExtension(filePath);
+        File file = File.createTempFile("omics-tmp-file", "." + extension);
         try (InputStream in = getInputStream(filePath)) {
             Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
