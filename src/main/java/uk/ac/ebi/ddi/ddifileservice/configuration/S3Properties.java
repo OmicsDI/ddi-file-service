@@ -12,7 +12,17 @@ public class S3Properties {
 
     private String bucketName;
 
+    private String region;
+
     private boolean envAuth = false;
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
 
     public String getEndpointUrl() {
         return endpointUrl;

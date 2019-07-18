@@ -17,7 +17,12 @@ import java.io.InputStream;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest()
+@SpringBootTest({
+		"s3.endpoint_url=https://s3.embassy.ebi.ac.uk",
+		"s3.bucket_name=caas-omicsdi",
+		"s3.region=eu-west-2",
+		"s3.env_auth=true"
+})
 public class ITS3FileSystemTest {
 
 	@Autowired
@@ -26,7 +31,7 @@ public class ITS3FileSystemTest {
 	@Autowired
 	private S3Properties s3Properties;
 
-	private String parentPath = "/testing/s3-service";
+	private String parentPath = "testing/s3-service";
 	private String testFile1 = parentPath + "/sample-file.txt";
 	private String testFile2 = parentPath + "/sample-file-2.txt";
 

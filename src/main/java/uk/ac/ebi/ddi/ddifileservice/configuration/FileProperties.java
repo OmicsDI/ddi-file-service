@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("file")
 public class FileProperties {
-    private String provider;
+    private String provider = "s3";
 
     public String getProvider() {
         return provider;
