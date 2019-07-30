@@ -7,6 +7,8 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -40,6 +42,8 @@ public class S3FileSystem implements IFileSystem {
     @Autowired
     private FileProperties fileProperties;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(S3FileSystem.class);
+
     @PostConstruct
     private void initializeAmazon() {
         if (!fileProperties.getProvider().equals("s3")) {
@@ -70,8 +74,13 @@ public class S3FileSystem implements IFileSystem {
 
     @Override
     public InputStream getInputStream(String filePath) {
-        S3Object s3Object = s3Client.getObject(s3Properties.getBucketName(), filePath);
-        return s3Object.getObjectContent();
+        try {
+            S3Object s3Object = s3Client.getObject(s3Properties.getBucketName(), filePath);
+            return s3Object.getObjectContent();
+        } catch (AmazonS3Exception e) {
+            LOGGER.error("Unable to get file {}", filePath);
+            throw e;
+        }
     }
 
     @Override
@@ -80,7 +89,6 @@ public class S3FileSystem implements IFileSystem {
         File file = File.createTempFile("omics-tmp-file", "." + extension);
         try (InputStream in = getInputStream(filePath)) {
             Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
         }
         file.deleteOnExit();
         return file;
@@ -92,12 +100,20 @@ public class S3FileSystem implements IFileSystem {
             ObjectMetadata meta = new ObjectMetadata();
             meta.setContentLength(outputStream.getSize());
             s3Client.putObject(s3Properties.getBucketName(), filePath, inputStream, meta);
+        } catch (AmazonS3Exception e) {
+            LOGGER.error("Unable to save file {}", filePath);
+            throw e;
         }
     }
 
     @Override
     public void copyFile(File localFile, String destinationFile) {
-        s3Client.putObject(s3Properties.getBucketName(), destinationFile, localFile);
+        try {
+            s3Client.putObject(s3Properties.getBucketName(), destinationFile, localFile);
+        } catch (AmazonS3Exception e) {
+            LOGGER.error("Unable to upload file {}", destinationFile);
+            throw e;
+        }
     }
 
     @Override
