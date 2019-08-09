@@ -170,6 +170,7 @@ public class S3FileSystem implements IFileSystem {
 /*            while(XferMgrProgress.getPercentTransferred() < 100.0){
                 System.out.println("percent transferreed is " + XferMgrProgress.getPercentTransferred());
             }*/
+            upload.waitForCompletion();
             LOGGER.info("key prefix is {}", upload.getKeyPrefix());
         }
         catch (Exception ex){

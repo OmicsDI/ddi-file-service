@@ -80,7 +80,7 @@ public class ITS3FileSystemTest {
 
 	@Test
 	public void testUploadDir(){
-		fileSystem.copyDirectory("ega",new File(parentPath));
+		fileSystem.copyDirectory("ega", new File(parentPath));
 		Assert.assertTrue(fileSystem.listFilesFromFolder("ega").size() > 0);
 	}
 }
