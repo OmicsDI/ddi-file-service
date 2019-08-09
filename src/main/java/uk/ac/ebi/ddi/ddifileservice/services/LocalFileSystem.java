@@ -88,4 +88,9 @@ public class LocalFileSystem implements IFileSystem {
             }
         }
     }
+
+    @Override
+    public void copyDirectory(String dirPrefix, File dirPath){
+
+    }
 }

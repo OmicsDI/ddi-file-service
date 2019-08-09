@@ -7,6 +7,10 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.transfer.MultipleFileUpload;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.s3.transfer.TransferProgress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,5 +158,25 @@ public class S3FileSystem implements IFileSystem {
         for (String file : files) {
             deleteFile(file);
         }
+    }
+
+    public void copyDirectory(String dirPrefix, File dirPath){
+        try {
+            TransferManager tm = TransferManagerBuilder.standard().withS3Client(s3Client).build();
+            MultipleFileUpload upload = tm.uploadDirectory(s3Properties.getBucketName(),
+                    dirPrefix, dirPath, true);
+            TransferProgress XferMgrProgress = upload.getProgress();
+            LOGGER.info("transfer percentage is {} ", XferMgrProgress.getPercentTransferred());
+/*            while(XferMgrProgress.getPercentTransferred() < 100.0){
+                System.out.println("percent transferreed is " + XferMgrProgress.getPercentTransferred());
+            }*/
+            LOGGER.info("key prefix is {}", upload.getKeyPrefix());
+        }
+        catch (Exception ex){
+            LOGGER.error("Exception while uploading directory to S3 is {} ", ex.getMessage());
+        }
+/*        XferMgrProgress.showTransferProgress(upload);
+        // or block with Transfer.waitForCompletion()
+        XferMgrProgress.waitForCompletion(upload);*/
     }
 }

@@ -25,4 +25,6 @@ public interface IFileSystem {
     boolean isFile(String filePath);
 
     void cleanDirectory(String dirPath);
+
+    void copyDirectory(String dirPrefix, File dirPath);
 }

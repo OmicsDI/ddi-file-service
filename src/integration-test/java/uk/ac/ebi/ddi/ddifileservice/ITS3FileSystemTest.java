@@ -78,4 +78,9 @@ public class ITS3FileSystemTest {
 		Assert.assertEquals(0, files.size());
 	}
 
+	@Test
+	public void testUploadDir(){
+		fileSystem.copyDirectory("ega",new File(parentPath));
+		Assert.assertTrue(fileSystem.listFilesFromFolder("ega").size() > 0);
+	}
 }
