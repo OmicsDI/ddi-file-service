@@ -71,4 +71,14 @@ public class ITLocalFileSystemTest {
 		Assert.assertEquals(0, files.size());
 	}
 
+	@Test
+	public void testLocalCopyDir(){
+		fileSystem.copyDirectory("/tmp/prod/bio",new File("/tmp/prod/ega"));
+		Boolean isExist = fileSystem.listFilesFromFolder("/tmp/prod/bio").size() > 0;
+		File[] listFiles = new File("/tmp/prod/bio").listFiles();
+		for(File file : listFiles){
+			file.delete();
+		}
+		Assert.assertEquals(isExist,true);
+	}
 }
