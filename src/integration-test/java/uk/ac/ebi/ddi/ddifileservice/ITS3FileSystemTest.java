@@ -16,7 +16,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest({
@@ -76,6 +79,7 @@ public class ITS3FileSystemTest {
 
 		Assert.assertFalse(fileToCheck.exists());
 
+		fileSystem.deleteFile(testFile1);
 		fileSystem.deleteFile(testFile2);
 
 		files = fileSystem.listFilesFromFolder(parentPath);
@@ -84,8 +88,20 @@ public class ITS3FileSystemTest {
 	}
 
 	@Test
-	public void testUploadDir(){
-		fileSystem.copyDirectory("ega", new File(parentPath));
-		Assert.assertTrue(fileSystem.listFilesFromFolder("ega").size() > 0);
+	public void testUploadDir() throws IOException {
+		fileSystem.cleanDirectory(parentPath);
+		File dirToBeUploaded = new File("/tmp/file-system-s3");
+		dirToBeUploaded.mkdirs();
+		File file = new File(getClass().getClassLoader().getResource("sample-file.txt").getFile());
+		Files.copy(file.toPath(), Paths.get(dirToBeUploaded.getPath(), "sample-file.txt"), REPLACE_EXISTING);
+		file = new File(getClass().getClassLoader().getResource("sample-file-2.txt").getFile());
+		Files.copy(file.toPath(), Paths.get(dirToBeUploaded.getPath(), "sample-file-2.txt"), REPLACE_EXISTING);
+
+		Assert.assertEquals(2, dirToBeUploaded.list().length);
+		Assert.assertEquals(0, fileSystem.listFilesFromFolder(parentPath).size());
+
+		fileSystem.copyDirectory(dirToBeUploaded.getAbsolutePath(), parentPath);
+		Assert.assertEquals(2, fileSystem.listFilesFromFolder(parentPath).size());
+		fileSystem.cleanDirectory(parentPath);
 	}
 }

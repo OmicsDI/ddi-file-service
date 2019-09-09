@@ -27,5 +27,5 @@ public interface IFileSystem {
 
     void cleanDirectory(String dirPath);
 
-    void copyDirectory(String dirPrefix, File dirPath);
+    void copyDirectory(String sourceDir, String destDir);
 }

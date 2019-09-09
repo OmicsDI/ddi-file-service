@@ -14,6 +14,7 @@ import uk.ac.ebi.ddi.ddifileservice.type.ConvertibleOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -72,13 +73,19 @@ public class ITLocalFileSystemTest {
 	}
 
 	@Test
-	public void testLocalCopyDir(){
-		fileSystem.copyDirectory("/tmp/prod/bio",new File("/tmp/prod/ega"));
-		Boolean isExist = fileSystem.listFilesFromFolder("/tmp/prod/bio").size() > 0;
-		File[] listFiles = new File("/tmp/prod/bio").listFiles();
-		for(File file : listFiles){
-			file.delete();
-		}
-		Assert.assertEquals(isExist,true);
+	public void testLocalCopyDir() throws IOException {
+
+		File experiment = new File(getClass().getClassLoader().getResource("sample-file.txt").getFile());
+		fileSystem.copyFile(experiment, testFile1);
+		experiment = new File(getClass().getClassLoader().getResource("sample-file-2.txt").getFile());
+		fileSystem.copyFile(experiment, testFile2);
+
+		Assert.assertEquals(2, fileSystem.listFilesFromFolder(parentPath).size());
+
+		String destDir = "/tmp/ega";
+		Files.createDirectories(new File(destDir).toPath());
+		fileSystem.copyDirectory(parentPath, destDir);
+		Assert.assertEquals(2, fileSystem.listFilesFromFolder(destDir).size());
+		fileSystem.cleanDirectory(destDir);
 	}
 }

@@ -171,24 +171,25 @@ public class S3FileSystem implements IFileSystem {
         }
     }
 
-    public void copyDirectory(String dirPrefix, File dirPath){
+    @Override
+    public void copyDirectory(String sourceDir, String destDir){
         try {
             TransferManager tm = TransferManagerBuilder.standard().withS3Client(s3Client).build();
             MultipleFileUpload upload = tm.uploadDirectory(s3Properties.getBucketName(),
-                    dirPrefix, dirPath, true);
+                    destDir, new File(sourceDir), true);
             TransferProgress XferMgrProgress = upload.getProgress();
             LOGGER.info("transfer percentage is {} ", XferMgrProgress.getPercentTransferred());
-/*            while(XferMgrProgress.getPercentTransferred() < 100.0){
-                System.out.println("percent transferreed is " + XferMgrProgress.getPercentTransferred());
-            }*/
+//            while(XferMgrProgress.getPercentTransferred() < 100.0){
+//                System.out.println("percent transferreed is " + XferMgrProgress.getPercentTransferred());
+//            }
             upload.waitForCompletion();
             LOGGER.info("key prefix is {}", upload.getKeyPrefix());
         }
         catch (Exception ex){
             LOGGER.error("Exception while uploading directory to S3 is {} ", ex.getMessage());
         }
-/*        XferMgrProgress.showTransferProgress(upload);
-        // or block with Transfer.waitForCompletion()
-        XferMgrProgress.waitForCompletion(upload);*/
+//        XferMgrProgress.showTransferProgress(upload);
+//        // or block with Transfer.waitForCompletion()
+//        XferMgrProgress.waitForCompletion(upload);
     }
 }

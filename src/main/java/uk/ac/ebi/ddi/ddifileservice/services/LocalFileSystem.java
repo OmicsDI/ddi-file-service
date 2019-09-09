@@ -95,22 +95,25 @@ public class LocalFileSystem implements IFileSystem {
     }
 
     @Override
-    public void copyDirectory(String destPath, File srcPath){
+    public void copyDirectory(String sourceDir, String destDir) {
         try
         {
-            File sourceLocation = srcPath;
-            File targetLocation = new File(destPath);
-            if (sourceLocation.isDirectory()) {
-                if (!targetLocation.exists()) {
-                    targetLocation.mkdir();
-                }
+            File sourceLocation = new File(sourceDir);
+            File targetLocation = new File(destDir);
 
-                String[] children = sourceLocation.list();
-                for (int i=0; i<children.length; i++) {
-                    copyDirectory(destPath+ "/"+children[i], new File(sourceLocation + "/"+children[i]));
-                }
-            } else {
-                copyFile(srcPath,destPath);
+            if (sourceLocation.isFile()) {
+                copyFile(sourceLocation, destDir);
+                return;
+            }
+            if (!targetLocation.exists()) {
+                targetLocation.mkdirs();
+            }
+
+            String[] children = sourceLocation.list();
+            for (int i = 0; i < children.length; i++) {
+                String sourcePath = new File(sourceDir, children[i]).getAbsolutePath();
+                String destPath = new File(destDir, children[i]).getPath();
+                copyDirectory(sourcePath, destPath);
             }
         }
         catch (Exception ex) {
