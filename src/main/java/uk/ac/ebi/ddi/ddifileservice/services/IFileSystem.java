@@ -1,5 +1,6 @@
 package uk.ac.ebi.ddi.ddifileservice.services;
 
+import uk.ac.ebi.ddi.ddifileservice.type.CloseableFile;
 import uk.ac.ebi.ddi.ddifileservice.type.ConvertibleOutputStream;
 
 import java.io.File;
@@ -12,7 +13,7 @@ public interface IFileSystem {
 
     InputStream getInputStream(String filePath) throws FileNotFoundException;
 
-    File getFile(String filePath) throws IOException;
+    CloseableFile getFile(String filePath) throws IOException;
 
     void saveFile(ConvertibleOutputStream outputStream, String filePath) throws IOException;
 

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
+import uk.ac.ebi.ddi.ddifileservice.type.CloseableFile;
 import uk.ac.ebi.ddi.ddifileservice.type.ConvertibleOutputStream;
 
 import java.io.*;
@@ -31,8 +32,12 @@ public class LocalFileSystem implements IFileSystem {
     }
 
     @Override
-    public File getFile(String filePath) {
-        return new File(filePath);
+    public CloseableFile getFile(String filePath) {
+        return new CloseableFile(filePath) {
+            @Override
+            public void close() throws IOException {
+            }
+        };
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ddi.ddifileservice.configuration.S3Properties;
 import uk.ac.ebi.ddi.ddifileservice.services.IFileSystem;
+import uk.ac.ebi.ddi.ddifileservice.type.CloseableFile;
 import uk.ac.ebi.ddi.ddifileservice.type.ConvertibleOutputStream;
 
 import java.io.File;
@@ -65,12 +66,16 @@ public class ITS3FileSystemTest {
 			Assert.assertTrue(IOUtils.toString(f2).contains("this is the test file 2"));
 		}
 
-		File file = fileSystem.getFile(testFile1);
-		String contents = new String(Files.readAllBytes(file.toPath()));
-		Assert.assertTrue(contents.contains("This is a test file"));
+		File fileToCheck;
+		try (CloseableFile file = fileSystem.getFile(testFile1)) {
+			fileToCheck = new File(file.getAbsolutePath());
+			Assert.assertTrue(fileToCheck.exists());
+			String contents = new String(Files.readAllBytes(file.toPath()));
+			Assert.assertTrue(contents.contains("This is a test file"));
+		}
 
+		Assert.assertFalse(fileToCheck.exists());
 
-		fileSystem.deleteFile(testFile1);
 		fileSystem.deleteFile(testFile2);
 
 		files = fileSystem.listFilesFromFolder(parentPath);

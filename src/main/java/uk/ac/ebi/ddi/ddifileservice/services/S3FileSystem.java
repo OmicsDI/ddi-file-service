@@ -18,15 +18,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.ac.ebi.ddi.ddifileservice.configuration.FileProperties;
 import uk.ac.ebi.ddi.ddifileservice.configuration.S3Properties;
+import uk.ac.ebi.ddi.ddifileservice.type.CloseableFile;
 import uk.ac.ebi.ddi.ddifileservice.type.ConvertibleOutputStream;
 import uk.ac.ebi.ddi.ddifileservice.utils.FilenameUtils;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +34,8 @@ import java.util.List;
         matchIfMissing = true
 )
 public class S3FileSystem implements IFileSystem {
+
+    private static final int BUFFER_SIZE = 2048;
 
     private AmazonS3 s3Client;
 
@@ -79,7 +78,8 @@ public class S3FileSystem implements IFileSystem {
     @Override
     public InputStream getInputStream(String filePath) {
         try {
-            S3Object s3Object = s3Client.getObject(s3Properties.getBucketName(), filePath);
+            GetObjectRequest getObjectRequest = new GetObjectRequest(s3Properties.getBucketName(), filePath);
+            S3Object s3Object = s3Client.getObject(getObjectRequest);
             return s3Object.getObjectContent();
         } catch (AmazonS3Exception e) {
             LOGGER.error("Unable to get file {}", filePath);
@@ -88,14 +88,25 @@ public class S3FileSystem implements IFileSystem {
     }
 
     @Override
-    public File getFile(String filePath) throws IOException {
+    public CloseableFile getFile(String filePath) throws IOException {
         String extension = FilenameUtils.getFileExtension(filePath);
         File file = File.createTempFile("omics-tmp-file", "." + extension);
+        OutputStream outputStream = new FileOutputStream(file);
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int bytesRead;
         try (InputStream in = getInputStream(filePath)) {
-            Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            while ((bytesRead = in.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
         }
-        file.deleteOnExit();
-        return file;
+        return new CloseableFile(file) {
+            @Override
+            public void close() throws IOException {
+                // With S3, we get the file from S3 storage and then save it into temporary file
+                // So, we should delete it after once done
+                delete();
+            }
+        };
     }
 
     @Override
