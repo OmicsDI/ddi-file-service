@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>ddi-file-service</artifactId>
-	<version>1.5-SNAPSHOT</version>
+	<version>1.5</version>
 	<name>ddi-file-service</name>
 	<description>S3 Service for OmicsDI</description>
 
@@ -19,7 +19,7 @@
 		<connection>scm:git:github.com/OmicsDI/ddi-file-service.git</connection>
 		<developerConnection>scm:git:git@github.com:OmicsDI/ddi-file-service.git</developerConnection>
 		<url>https://github.com/OmicsDI/ddi-file-service.git</url>
-		<tag>ddi-file-service-1.0</tag>
+		<tag>ddi-file-service-1.5</tag>
 	</scm>
 
 	<dependencies>
